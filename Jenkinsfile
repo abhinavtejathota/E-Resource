@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     tools {
-        nodejs "NodeJS" // Name of the NodeJS tool you configured in Jenkins
+        nodejs "NodeJS" // must match the name in Global Tool Config
     }
 
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/abhinavtejathota/E-Resource.git'

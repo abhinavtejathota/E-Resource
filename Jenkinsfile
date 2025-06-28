@@ -5,10 +5,9 @@ pipeline {
         nodejs "NodeJS" // Name of the NodeJS tool you configured in Jenkins
     }
 
-    stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/abhinavtejathota/E-Resource.git'
+                git branch: 'main', url: 'https://github.com/abhinavtejathota/E-Resource.git'
             }
         }
 

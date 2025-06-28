@@ -31,3 +31,8 @@ pipeline {
         }
     }
 }
+post {
+    always {
+        cleanWs()
+    }
+}

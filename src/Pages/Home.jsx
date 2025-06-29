@@ -13,7 +13,7 @@ const Home = () => {
         <div className="flex items-center">
           <img src="/Haven.png" alt="Logo" className="h-10 w-20 ms-4" />
           <img src="/Alco.png" alt="Logo" className="h-10 w-10" />
-          <span className="font-bold text-xl text-red-900">TableHaven</span>
+          <span className="font-bold text-xl text-red-900">DineMaster</span>
         </div>
 
         {/* Nav Links */}

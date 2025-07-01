@@ -22,7 +22,7 @@ function Login() {
 
     try {
       const res = await axios.post(
-        "${process.env.REACT_APP_API_URL}/api/login",
+        process.env.REACT_APP_API_URL + "/api/login",
         credentials
       );
       const { role } = res.data;

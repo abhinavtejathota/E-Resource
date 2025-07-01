@@ -44,17 +44,88 @@ app.get("/api/products", (req, res) => {
   });
 });
 
-app.post("/api/users", (req, res) => {
-  const { name, email, phone, birthday } = req.body;
+//signup
+app.post("/api/signup", (req, res) => {
+  const { name, email, phone, password, birthday } = req.body;
+
+  const checkQuery = `
+    SELECT email FROM users WHERE email = ? OR name = ?
+    UNION
+    SELECT email FROM admins WHERE email = ? OR username = ?
+  `;
+
+  db.query(checkQuery, [email, name, email, name], (err, result) => {
+    if (err) {
+      console.error("Signup DB Error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (result.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Username or email already exists" });
+    }
+
+    const insertQuery = `
+      INSERT INTO users(name, email, phone, password, birthday)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      insertQuery,
+      [name, email, phone, password, birthday],
+      (err, result) => {
+        if (err) {
+          console.error("Signup Insert Error:", err);
+          return res.status(500).json({ error: err.message });
+        }
+
+        res.status(201).json({
+          message: "User signed up successfully",
+          userId: result.insertId,
+        });
+      }
+    );
+  });
+});
+
+//login
+app.post("/api/login", (req, res) => {
+  const { emailOrUsername, password } = req.body;
+
+  const adminQuery = `
+    SELECT * FROM admins
+    WHERE (username = ? OR email = ?) AND password = ?
+  `;
+
   db.query(
-    "INSERT INTO users(name, email) VALUES (?, ?, ?, ?)",
-    [name, email, phone, birthday],
-    (err, result) => {
+    adminQuery,
+    [emailOrUsername, emailOrUsername, password],
+    (err, adminResult) => {
       if (err) return res.status(500).json({ error: err.message });
-      else
-        res
-          .status(201)
-          .json({ message: "User added", userId: result.insertId });
+
+      if (adminResult.length > 0) {
+        return res.status(200).json({ role: "admin", admin: adminResult[0] });
+      }
+
+      const userQuery = `
+      SELECT * FROM users
+      WHERE (name = ? OR email = ?) AND password = ?
+    `;
+
+      db.query(
+        userQuery,
+        [emailOrUsername, emailOrUsername, password],
+        (err, userResult) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          if (userResult.length > 0) {
+            return res.status(200).json({ role: "user", user: userResult[0] });
+          } else {
+            return res.status(401).json({ message: "Invalid credentials" });
+          }
+        }
+      );
     }
   );
 });

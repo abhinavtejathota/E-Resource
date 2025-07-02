@@ -23,6 +23,11 @@ function PaymentPage() {
   const handleConfirm = async () => {
     try {
       const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        alert("User not logged in.");
+        return;
+      }
+
       const date = new Date().toISOString().split("T")[0];
       const time = new Date().toTimeString().split(" ")[0];
 
@@ -44,42 +49,67 @@ function PaymentPage() {
     }
   };
 
-  if (!data) return <p>Loading...</p>;
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-gray-600">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Payment Summary</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 p-6">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold mb-6 text-center text-purple-700">
+          💳 Payment Summary
+        </h1>
 
-      <div className="mb-4">
-        <p>
-          <strong>Tables:</strong> {data.selectedTables.join(", ")}
-        </p>
-        <p>
-          <strong>Total Cost:</strong> ₹{data.totalCost.toFixed(2)}
-        </p>
+        <div className="mb-6 text-lg text-gray-700">
+          <p className="mb-2">
+            <strong>Tables:</strong> {data.selectedTables.join(", ")}
+          </p>
+          <p>
+            <strong>Total Cost:</strong> ₹{data.totalCost.toFixed(2)}
+          </p>
+        </div>
+
+        <h2 className="text-2xl font-semibold mb-4 text-blue-700">
+          🧾 Items Selected
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 text-gray-800">
+          {Object.entries(data.selectedProducts).map(
+            ([productId, quantity]) => {
+              const product = products.find(
+                (p) => p.product_id === Number(productId)
+              );
+              return (
+                <div
+                  key={productId}
+                  className="p-4 bg-gray-50 rounded-lg shadow border"
+                >
+                  <p className="font-medium">
+                    {product?.product_name || "Item"}
+                  </p>
+                  <p className="text-sm">
+                    Qty: {quantity} × ₹{product?.price} = ₹
+                    {(product?.price * quantity).toFixed(2)}
+                  </p>
+                </div>
+              );
+            }
+          )}
+        </div>
+
+        <div className="text-center">
+          <button
+            onClick={handleConfirm}
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg font-semibold px-8 py-3 rounded-full shadow-lg transition"
+          >
+            Confirm Booking
+          </button>
+        </div>
       </div>
-
-      <h2 className="text-xl font-semibold mb-2">Items Selected</h2>
-      <div className="mb-4">
-        {Object.entries(data.selectedProducts).map(([productId, quantity]) => {
-          const product = products.find(
-            (p) => p.product_id === Number(productId)
-          );
-          return (
-            <div key={productId}>
-              {product?.product_name || "Item"} — Qty: {quantity}, ₹
-              {product?.price * quantity}
-            </div>
-          );
-        })}
-      </div>
-
-      <button
-        onClick={handleConfirm}
-        className="bg-green-600 text-white px-4 py-2 rounded"
-      >
-        Confirm Booking
-      </button>
     </div>
   );
 }

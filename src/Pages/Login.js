@@ -25,15 +25,20 @@ function Login() {
         process.env.REACT_APP_API_URL + "/api/login",
         credentials
       );
-      const { role } = res.data;
 
-      if (role === "admin") navigate("/homeadmin");
-      else if (role === "user") navigate("/homeuser");
+      const { role, user, admin } = res.data;
+
+      if (role === "admin") {
+        localStorage.setItem("admin_id", admin.admin_id);
+        navigate("/homeadmin");
+      } else if (role === "user") {
+        localStorage.setItem("user_id", user.user_id);
+        navigate("/homeuser");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
   };
-
   return (
     <div className="login-page">
       <div className="min-h-screen flex items-center justify-center">

@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
 app.get("/api/users", async (req, res) => {
   try {
     const [results] = await db.query("SELECT * FROM users");
+    console.log("Users found:", results.length);
     res.status(200).json(results);
   } catch (err) {
     console.error("SQL Error:", err.message);
@@ -150,6 +151,17 @@ app.post("/api/login", async (req, res) => {
   } catch (err) {
     console.error("Login error:", err);
     return res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all reservations
+app.get("/api/reservations", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM reservations");
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching reservations:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

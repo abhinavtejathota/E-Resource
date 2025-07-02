@@ -5,6 +5,9 @@ import SignUp from "./Pages/SignUp";
 import Login from "./Pages/Login";
 import HomeUser from "./Pages/HomeUser";
 import HomeAdmin from "./Pages/HomeAdmin";
+import TableBookingPage from "./Pages/TableBookingPage";
+import PaymentPage from "./Pages/PaymentPage";
+import ConfirmPage from "./Pages/ConfirmPage";
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/homeuser" element={<HomeUser />} />
         <Route path="/homeadmin" element={<HomeAdmin />} />
+        <Route path="/book-table" element={<TableBookingPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/confirm" element={<ConfirmPage />} />
       </Routes>
     </Router>
   );

@@ -11,6 +11,7 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
+//all users
 app.get("/api/users", (req, res) => {
   db.query("Select * from users", (err, results) => {
     if (err) {
@@ -22,6 +23,20 @@ app.get("/api/users", (req, res) => {
   });
 });
 
+//all products
+app.get("/api/products", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM products ORDER BY times_selected DESC"
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//all admins
 app.get("/api/admins", (req, res) => {
   db.query("Select * from admins", (err, results) => {
     if (err) {
@@ -33,15 +48,66 @@ app.get("/api/admins", (req, res) => {
   });
 });
 
-app.get("/api/products", (req, res) => {
-  db.query("Select * from products", (err, results) => {
-    if (err) {
-      console.error("SQL Error:", err.message);
-      res.status(500).send({ message: "Error fetching users" });
-    } else {
-      res.status(200).json(results);
+//reservation
+app.post("/api/reservations", async (req, res) => {
+  const { user_id, date, time, total_cost, selectedTables, selectedProducts } =
+    req.body;
+
+  const connection = await db.getConnection(); // Get a DB connection from pool
+  await connection.beginTransaction();
+
+  try {
+    const [reservationResult] = await connection.query(
+      `INSERT INTO reservations (user_id, date, time, total_cost) VALUES (?, ?, ?, ?)`,
+      [user_id, date, time, total_cost]
+    );
+
+    const reservation_id = reservationResult.insertId;
+
+    for (const table_id of selectedTables) {
+      await connection.query(
+        `INSERT INTO reservation_tables (reservation_id, table_id) VALUES (?, ?)`,
+        [reservation_id, table_id]
+      );
+
+      await connection.query(
+        `UPDATE tables SET is_reserved = 1, reservation_id = ? WHERE table_id = ?`,
+        [reservation_id, table_id]
+      );
     }
-  });
+
+    for (const [product_id, quantity] of Object.entries(selectedProducts)) {
+      await connection.query(
+        `INSERT INTO reservation_items (reservation_id, product_id, quantity) VALUES (?, ?, ?)`,
+        [reservation_id, product_id, quantity]
+      );
+
+      await connection.query(
+        `UPDATE products SET times_selected = COALESCE(times_selected, 0) + ? WHERE product_id = ?`,
+        [quantity, product_id]
+      );
+    }
+
+    await connection.commit();
+    connection.release();
+    res.status(201).json({ message: "Reservation successful", reservation_id });
+  } catch (err) {
+    await connection.rollback();
+    connection.release();
+    console.error("Reservation failed:", err);
+    res.status(500).json({ error: "Reservation failed. Try again." });
+  }
+});
+
+//all tables
+app.get("/api/tables", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM tables");
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching tables:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 //signup

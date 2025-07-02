@@ -16,12 +16,14 @@ function TableBookingPage() {
   }, []);
 
   const fetchTables = async () => {
-    const res = await axios.get("/api/tables");
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/tables`);
     setTables(res.data);
   };
 
   const fetchProducts = async () => {
-    const res = await axios.get("/api/products");
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/products`
+    );
     setProducts(res.data);
   };
 

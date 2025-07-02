@@ -14,7 +14,9 @@ function PaymentPage() {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await axios.get("/api/products");
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/products`
+    );
     setProducts(data);
   };
 
@@ -24,7 +26,7 @@ function PaymentPage() {
       const date = new Date().toISOString().split("T")[0];
       const time = new Date().toTimeString().split(" ")[0];
 
-      await axios.post("/api/reservations", {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/reservations`, {
         user_id: userId,
         date,
         time,

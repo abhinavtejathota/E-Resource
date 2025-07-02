@@ -33,7 +33,9 @@ function HomeUser() {
     <div className="min-h-screen bg-green-50">
       {/* Header */}
       <div className="flex justify-between items-center p-4 bg-white shadow">
-        <h2 className="text-xl font-semibold text-green-700">Restaurant App</h2>
+        <h2 className="text-xl font-semibold text-green-700">
+          Haven DineMaster
+        </h2>
         <div className="flex items-center gap-4">
           <span className="text-gray-700">👤 {userName}</span>
           <button
@@ -45,20 +47,32 @@ function HomeUser() {
         </div>
       </div>
 
-      {/* Body */}
-      <div className="flex flex-col items-center justify-center mt-20">
-        <h1 className="text-3xl font-bold text-green-800">
-          Welcome, {userName}!
-        </h1>
-        <p className="mt-2 text-gray-700">
-          You are now logged in as a regular user.
-        </p>
-        <button
-          className="mt-6 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
-          onClick={() => navigate("/book-table")}
-        >
-          Reserve Table →
-        </button>
+      {/* Main Section */}
+      <div className="flex flex-col md:flex-row min-h-[calc(100vh-72px)] p-8 gap-10">
+        {/* Left: Text */}
+        <div className="flex-1 flex flex-col justify-center items-start">
+          <h1 className="text-4xl font-bold text-green-800 mb-4">
+            Welcome back, {userName}!
+          </h1>
+          <p className="text-gray-700 text-lg mb-6">
+            Planning a visit? Click below to reserve your table with ease.
+          </p>
+          <button
+            onClick={() => navigate("/book-table")}
+            className="bg-green-600 text-white text-lg px-6 py-3 rounded-full shadow hover:bg-green-700 transition"
+          >
+            Reserve a Table →
+          </button>
+        </div>
+
+        {/* Right: Image */}
+        <div className="flex-1 flex flex-col justify-center items-start">
+          <img
+            src="/Tables.jpg"
+            alt="Restaurant"
+            className="w-full rounded-2xl shadow-lg object-cover"
+          />
+        </div>
       </div>
     </div>
   );

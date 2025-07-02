@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function PaymentPage() {
   const [data, setData] = useState(null);
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const reservation = JSON.parse(localStorage.getItem("reservation"));
@@ -12,8 +14,8 @@ function PaymentPage() {
   }, []);
 
   const fetchProducts = async () => {
-    const res = await axios.get("/api/products");
-    setProducts(res.data);
+    const { data } = await axios.get("/api/products");
+    setProducts(data);
   };
 
   const handleConfirm = async () => {
@@ -22,7 +24,7 @@ function PaymentPage() {
       const date = new Date().toISOString().split("T")[0];
       const time = new Date().toTimeString().split(" ")[0];
 
-      const res = await axios.post("/api/reservations", {
+      await axios.post("/api/reservations", {
         user_id: userId,
         date,
         time,
@@ -58,7 +60,9 @@ function PaymentPage() {
       <h2 className="text-xl font-semibold mb-2">Items Selected</h2>
       <div className="mb-4">
         {Object.entries(data.selectedProducts).map(([productId, quantity]) => {
-          const product = products.find((p) => p.product_id == productId);
+          const product = products.find(
+            (p) => p.product_id === Number(productId)
+          );
           return (
             <div key={productId}>
               {product?.product_name || "Item"} — Qty: {quantity}, ₹

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function TableBookingPage() {
   const [tables, setTables] = useState([]);
@@ -7,6 +8,7 @@ function TableBookingPage() {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState({});
   const [mode, setMode] = useState("individual");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTables();
@@ -46,7 +48,8 @@ function TableBookingPage() {
   const handleBook = () => {
     const totalCost = Object.entries(selectedProducts).reduce(
       (acc, [id, qty]) => {
-        const product = products.find((p) => p.product_id == id);
+        const product = products.find((p) => p.product_id === Number(id));
+
         return acc + product.price * qty;
       },
       0
